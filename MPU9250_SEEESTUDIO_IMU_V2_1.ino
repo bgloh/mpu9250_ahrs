@@ -21,8 +21,8 @@
 MPU9250 accelgyro;
 I2Cdev   I2C_M;
 Madgwick filter;
-#define AHRS_FREQUENCY 25
-#define GYRO_RATE_DIVIDER 300 
+#define AHRS_FREQUENCY 50
+#define GYRO_RATE_DIVIDER 0   // 8 kHz sampling
 #define sample_num_mdate  1000
 unsigned long microsPerReading, microsPrevious;  
 
@@ -63,7 +63,7 @@ void setup()
     // initialize serial communication
     // (38400 chosen because it works as well at 8MHz as it does at 16MHz, but
     // it's really up to you depending on your project)
-    Serial.begin(9600);
+    Serial.begin(38400);
 
     // initialize device
     Serial.println("Initializing I2C devices...");
@@ -79,8 +79,6 @@ void setup()
     Serial.println("     ");
     // TO CALIBRATE, UNCOMMENT THIS 
    // Mxyz_init_calibrated ();
-    delay(10000);
-
     // AHRS
     
      // initialize variables to pace updates to correct rate
@@ -303,7 +301,6 @@ void getGyro_Data(void)
 void getCompass_Data(void)
 {
     I2C_M.writeByte(MPU9150_RA_MAG_ADDRESS, 0x0A, 0x01); //enable the magnetometer
-    delay(10);
     I2C_M.readBytes(MPU9150_RA_MAG_ADDRESS, MPU9150_RA_MAG_XOUT_L, 6, buffer_m);
 
     mx = ((int16_t)(buffer_m[1]) << 8) | buffer_m[0] ;
